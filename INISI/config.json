@@ -1,0 +1,60 @@
+﻿{
+	gamelist:[
+		{
+			name:"上古卷轴5:天际",
+			desc:"鬼知道有什么用",
+			iniData:[
+				{
+					iniName:"SkyrimPrefs",
+					iniPath:"%mydocuments%\\My Games\\Skyrim\\SkyrimPrefs.ini",
+					iniProp:[
+						{
+							section:"launch",
+							text:"bEnableFileSelection=1"
+						},
+						{
+							section:"display",
+							text:"iMaxAnisotropy=0;fGamma=1.00;iWaterMultiSamples=0;iMultiSample=0;bTreesReceiveShadows=1;
+							bDrawLandShadows=1;bFloatPointRenderTarget=1;bFXAAEnabled=0;bShadowsOnGrass=1;
+							bTransparencyMultisampling=0;bDeferredShadows=1;bDrawShadows=1"
+						}
+					]
+				},
+				{
+					iniName:"Skyrim",
+					iniPath:"%mydocuments%\\My Games\\Skyrim\\Skyrim.ini",
+					iniProp:[
+						{
+							section:"launch",
+							text:"bEnableFileSelection=1"
+						},
+						{
+							section:"display",
+							text:""
+						}
+					]
+				}
+			]
+		},
+		{
+			name:"23333",
+			desc:"2333333333333333",
+			iniData:[
+				{
+					iniName:"SkyrimPrefs",
+					iniPath:"%userprofile%/My Games/Skyrim/SkyrimPrefs.ini",
+					iniProp:[
+						{
+							section:"launch",
+							text:"bEnableFileSelection=1"
+						},
+						{
+							section:"display",
+							text:"iMaxAnisotropy=0;fGamma=1.0"
+						}
+					]
+				}
+			]
+		}
+	]
+}

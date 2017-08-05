@@ -9,11 +9,11 @@
 					iniPath:"%mydocuments%\\My Games\\Skyrim\\SkyrimPrefs.ini",
 					iniProp:[
 						{
-							section:"launch",
+							section:"Launcher",
 							text:"bEnableFileSelection=1"
 						},
 						{
-							section:"display",
+							section:"Display",
 							text:"iMaxAnisotropy=0;fGamma=1.00;iWaterMultiSamples=0;iMultiSample=0;bTreesReceiveShadows=1;
 							bDrawLandShadows=1;bFloatPointRenderTarget=1;bFXAAEnabled=0;bShadowsOnGrass=1;
 							bTransparencyMultisampling=0;bDeferredShadows=1;bDrawShadows=1"
@@ -25,12 +25,8 @@
 					iniPath:"%mydocuments%\\My Games\\Skyrim\\Skyrim.ini",
 					iniProp:[
 						{
-							section:"launch",
+							section:"Launcher",
 							text:"bEnableFileSelection=1"
-						},
-						{
-							section:"display",
-							text:""
 						}
 					]
 				}
@@ -45,11 +41,11 @@
 					iniPath:"%userprofile%/My Games/Skyrim/SkyrimPrefs.ini",
 					iniProp:[
 						{
-							section:"launch",
+							section:"Launcher",
 							text:"bEnableFileSelection=1"
 						},
 						{
-							section:"display",
+							section:"Display",
 							text:"iMaxAnisotropy=0;fGamma=1.0"
 						}
 					]

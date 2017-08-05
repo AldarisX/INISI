@@ -25,10 +25,11 @@ namespace INISI
         {
             string jsontext = File.ReadAllText(@"config.json");
             jsonObj = JObject.Parse(jsontext);
-            int jsonCount = jsonObj["gamelist"].Count();
-            if (jsonCount >= 1)
+            //取得配置总数
+            int gameCount = jsonObj["gamelist"].Count();
+            if (gameCount >= 1)
             {
-                for (int i = 0; i < jsonCount; i++)
+                for (int i = 0; i < gameCount; i++)
                 {
                     cb_game.Items.Add(jsonObj["gamelist"][i]["name"]);
                 }
@@ -42,17 +43,71 @@ namespace INISI
 
         private void cb_game_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            tb_desc.Text = jsonObj["gamelist"][cb_game.SelectedIndex]["desc"].ToString();
+            JToken selectGame = jsonObj["gamelist"][cb_game.SelectedIndex];
+            tb_desc.Text = selectGame["desc"].ToString();
 
             string iniTips = "";
-            iniPropCount = jsonObj["gamelist"][cb_game.SelectedIndex]["iniData"].Count();
-            for(int i = 0; i < iniPropCount; i++)
+            //取得要修改的配置文件总数
+            iniPropCount = selectGame["iniData"].Count();
+            for (int i = 0; i < iniPropCount; i++)
             {
-                iniTips += jsonObj["gamelist"][cb_game.SelectedIndex]["iniData"][i]["iniName"].ToString() + " : ";
-                iniTips += jsonObj["gamelist"][cb_game.SelectedIndex]["iniData"][i]["iniPath"].ToString().Replace("%userprofile%", getUserDir()).Replace("%mydocuments%", getDocDir()) + "\n";
+                //取得ini的属性
+                JToken gameIni = selectGame["iniData"][i];
+                iniTips += gameIni["iniName"].ToString() + " : ";
+                iniTips += getRealPath(gameIni["iniPath"].ToString()) + "\n";
             }
+            //显示提示信息
             iniTips = "修改的ini有\n" + iniTips;
             tb_tips.Text = iniTips;
+        }
+
+        private void btn_about_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("程序作者:AldarisX(bilibili)\n提出者:夜猫无心");
+            MessageBox.Show("关于一些操作\n%userprofile%为用户目录\n%mydocuments%为用的文档目录");
+        }
+
+        private void btn_import_Click(object sender, RoutedEventArgs e)
+        {
+            tb_tips.Text = "";
+            for (int i = 0; i < iniPropCount; i++)
+            {
+                //取得ini的属性
+                JToken gameIni = jsonObj["gamelist"][cb_game.SelectedIndex]["iniData"][i];
+                string iniPath = getRealPath(gameIni["iniPath"].ToString());
+                //修改ini文件权限,确保可写
+                File.SetAttributes(iniPath, FileAttributes.Normal);
+                tb_tips.AppendText("\n" + iniPath + "\n");
+                if (File.Exists(iniPath))
+                {
+                    int sectionCount = gameIni["iniProp"].Count();
+                    for (int j = 0; j < sectionCount; j++)
+                    {
+                        //解析ini的内容
+                        JToken iniProp = gameIni["iniProp"][j];
+                        string section = iniProp["section"].ToString();
+                        string[] inis = iniProp["text"].ToString().Split(';');
+                        tb_tips.AppendText("[" + section + "]" + "\n");
+                        for (int k = 0; k < inis.Count(); k++)
+                        {
+                            if (inis[k].Length > 0)
+                            {
+                                string[] kys = inis[k].Split('=');
+                                string key = kys[0];
+                                string value = kys[1];
+                                //写入ini
+                                Kernel32.WriteIniKeys(section, key, value, iniPath);
+                                tb_tips.AppendText(trimString(inis[k]) + "\n");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("文件不存在\n" + iniPath);
+                }
+            }
+            MessageBox.Show("操作成功完成");
         }
 
         private string getUserDir()
@@ -65,44 +120,15 @@ namespace INISI
             return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
-        private void btn_about_Click(object sender, RoutedEventArgs e)
+        public string getRealPath(string str)
         {
-            MessageBox.Show("程序作者:AldarisX(bilibili)\n提出者:夜猫无心");
-            MessageBox.Show("关于一些操作\n%userprofile%为用户目录\n%mydocuments%为用的文档目录");
+            return str.Replace("%userprofile%", getUserDir()).Replace("%mydocuments%", getDocDir());
         }
 
-        private void btn_import_Click(object sender, RoutedEventArgs e)
+        public string trimString(string str)
         {
-            tb_tips.Text = "";
-            for(int i = 0; i < iniPropCount; i++)
-            {
-                string iniPath = jsonObj["gamelist"][cb_game.SelectedIndex]["iniData"][i]["iniPath"].ToString().Replace("%userprofile%", getUserDir()).Replace("%mydocuments%", getDocDir());
-                if (File.Exists(iniPath))
-                {
-                    int sectionCount = jsonObj["gamelist"][cb_game.SelectedIndex]["iniData"][i]["iniProp"].Count();
-                    for (int j = 0; j < sectionCount; j++)
-                    {
-                        string section = jsonObj["gamelist"][cb_game.SelectedIndex]["iniData"][i]["iniProp"][j]["section"].ToString();
-                        string[] inis = jsonObj["gamelist"][cb_game.SelectedIndex]["iniData"][i]["iniProp"][j]["text"].ToString().Split(';');
-                        for (int k = 0; k < inis.Count(); k++)
-                        {
-                            if (inis[k].Length > 0)
-                            {
-                                tb_tips.AppendText(inis[k] + "\n");
-                                string[] kys = inis[k].Split('=');
-                                string key = kys[0];
-                                string value = kys[1];
-                                Kernel32.WriteIniKeys(section, key, value, iniPath);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("文件不存在\n" + iniPath);
-                }
-            }
-            MessageBox.Show("操作成功完成");
+            return str.Replace("\n", "").Replace("\t", "").Replace("\r", "").Replace(" ", "");
         }
     }
+
 }

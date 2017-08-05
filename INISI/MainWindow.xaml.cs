@@ -44,7 +44,7 @@ namespace INISI
         private void cb_game_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             JToken selectGame = jsonObj["gamelist"][cb_game.SelectedIndex];
-            tb_desc.Text = selectGame["desc"].ToString();
+            tb_tips.Text = selectGame["desc"].ToString() + "\n";
 
             string iniTips = "";
             //取得要修改的配置文件总数
@@ -57,8 +57,11 @@ namespace INISI
                 iniTips += getRealPath(gameIni["iniPath"].ToString()) + "\n";
             }
             //显示提示信息
-            iniTips = "修改的ini有\n" + iniTips;
-            tb_tips.Text = iniTips;
+            if (cb_tips.IsChecked == true)
+            {
+                iniTips = "修改的ini有\n" + iniTips;
+                tb_tips.Text = iniTips;
+            }
         }
 
         private void btn_about_Click(object sender, RoutedEventArgs e)
@@ -69,7 +72,6 @@ namespace INISI
 
         private void btn_import_Click(object sender, RoutedEventArgs e)
         {
-            tb_tips.Text = "";
             for (int i = 0; i < iniPropCount; i++)
             {
                 //取得ini的属性
@@ -77,7 +79,10 @@ namespace INISI
                 string iniPath = getRealPath(gameIni["iniPath"].ToString());
                 //修改ini文件权限,确保可写
                 File.SetAttributes(iniPath, FileAttributes.Normal);
-                tb_tips.AppendText("\n" + iniPath + "\n");
+                if (cb_tips.IsChecked == true)
+                {
+                    tb_tips.AppendText("\n" + iniPath + "\n");
+                }
                 if (File.Exists(iniPath))
                 {
                     int sectionCount = gameIni["iniProp"].Count();
@@ -87,7 +92,10 @@ namespace INISI
                         JToken iniProp = gameIni["iniProp"][j];
                         string section = iniProp["section"].ToString();
                         string[] inis = iniProp["text"].ToString().Split(';');
-                        tb_tips.AppendText("[" + section + "]" + "\n");
+                        if (cb_tips.IsChecked == true)
+                        {
+                            tb_tips.AppendText("[" + section + "]" + "\n");
+                        }
                         for (int k = 0; k < inis.Count(); k++)
                         {
                             if (inis[k].Length > 0)
@@ -97,7 +105,10 @@ namespace INISI
                                 string value = kys[1];
                                 //写入ini
                                 Kernel32.WriteIniKeys(section, key, value, iniPath);
-                                tb_tips.AppendText(trimString(inis[k]) + "\n");
+                                if (cb_tips.IsChecked == true)
+                                {
+                                    tb_tips.AppendText(trimString(inis[k]) + "\n");
+                                }
                             }
                         }
                     }
@@ -107,7 +118,8 @@ namespace INISI
                     MessageBox.Show("文件不存在\n" + iniPath);
                 }
             }
-            MessageBox.Show("操作成功完成");
+            tb_tips.AppendText("修改完毕\n");
+            tb_tips.ScrollToEnd();
         }
 
         private string getUserDir()
